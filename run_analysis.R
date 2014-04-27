@@ -2,8 +2,6 @@
 # Part1 : read txt file and transform into dataframe
 
 origin.dir <-"./UCI HAR Dataset/"
-# desti.dir  <- "./data"
-# if(!file.exists(desti.dir)){dir.create(desti.dir)}
 
 list <- list.files(origin.dir,full.names=TRUE,recursive=TRUE)
 file.name <- strsplit(list, split='.txt')
@@ -19,7 +17,6 @@ for   ( i in (1:length(list)) )
 
 ## 2.1 Merge [X_test] & [X_trainning] by adding [features] as column names
 
-# remark data source
 
 X <- rbind(X_test,X_train)
 names(X) <- features$V2
@@ -41,7 +38,6 @@ dim(mean.std.X) # 10299 x 86
 
 # 2.3 Merge [y_test] and [y_train] with column name act.lable. 
 
-# remark data source
 
 y <- rbind(y_test,y_train)
 names(y) <- c("act.label")
@@ -52,7 +48,6 @@ dim(act.y) # 10299 x 2
 
 # 2.4 Merge [subject_test] and [subject_train] with name subject
 
-# remark data source
 
 subject <- rbind(subject_test,subject_train)
 names(subject) <- c("subject")

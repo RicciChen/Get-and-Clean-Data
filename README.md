@@ -1,10 +1,19 @@
-## Peer Assessment
-# Part1 : read txt file and transform into dataframe
+# Read Me 
 
+How to use this file run_analysis.R
+
+
+Unzip the dataset under working directory. 
+   Set up origin.dir as below : 
+
+```
 origin.dir <-"./UCI HAR Dataset/"
-# desti.dir  <- "./data"
-# if(!file.exists(desti.dir)){dir.create(desti.dir)}
 
+```
+
+   Run following code to read all text files under dataset folder as data frame. 
+
+```
 list <- list.files(origin.dir,full.names=TRUE,recursive=TRUE)
 file.name <- strsplit(list, split='.txt')
 file.name <- gsub("^.*/","",file.name)
@@ -14,19 +23,21 @@ for   ( i in (1:length(list)) )
         data <- read.csv(file=list[i],header=FALSE,sep="")
         assign(file.name[i],data)        
 }
+```
 
-### Part2 : Merge & Reshape Data Sets
 
-## 2.1 Merge [X_test] & [X_trainning] by adding [features] as column names
+Merge & Reshape Data Sets.
 
-# remark data source
+Merge [X_test] & [X_trainning] by adding [features] as column names
 
+```
 X <- rbind(X_test,X_train)
 names(X) <- features$V2
 dim(X) #= 10299 x (561)
+```
+Extracts only the measurements on the mean and standard deviation for each measurement.
 
-## 2.2 Extracts only the measurements on the mean and standard deviation for each measurement.
-
+```
 #find out those columns of mean & std
 means <- grep("mean",features$V2,ignore.case=TRUE)
 stds  <- grep("std" ,features$V2,ignore.case=TRUE)
@@ -38,28 +49,27 @@ intersect(means,stds) # = 0
 rm.col <- setdiff( c(1:nrow(features)), union(means,stds)) 
 mean.std.X <- X[-rm.col] 
 dim(mean.std.X) # 10299 x 86
+```
+Merge [y_test] and [y_train] with column name act.lable. 
 
-# 2.3 Merge [y_test] and [y_train] with column name act.lable. 
-
-# remark data source
-
+```
 y <- rbind(y_test,y_train)
 names(y) <- c("act.label")
 dim(y) # 10299 x1
 names(activity_labels)<-c("act.label","activity")
 act.y <- join(y,activity_labels, by="act.label")
 dim(act.y) # 10299 x 2
+```
+Merge [subject_test] and [subject_train] with name subject
 
-# 2.4 Merge [subject_test] and [subject_train] with name subject
-
-# remark data source
-
+```
 subject <- rbind(subject_test,subject_train)
 names(subject) <- c("subject")
 dim(subject) # 10299 x1
-
-# 2.5 Merge 9 vectors
+```
+Merge 9 vectors
  
+```
 body_acc_x<-rbind(body_acc_x_test,body_acc_x_train)        
 names(body_acc_x) <- c(c(paste("body_acc_x",c(1:128),sep="")) )        
 dim(body_acc_x) # 10299 x 128
@@ -106,14 +116,18 @@ dim(V) # 10299 x 1152
 
 Data<-cbind(act.y,subject,mean.std.X,V)       
 dim(Data)        # 10299 x 1241
+```
 
-## 5. Creates a second, independent tidy data set 
-#  with the average of each variable for each activity and each subject. 
-
-# prepare a 180 x (1241-3) matrix 
-
+ Creates a second, independent tidy data set 
+   with the average of each variable for each activity and each subject. 
+   prepare a 180 x (1241-3) matrix 
+```
 Table <- matrix(rep(0,180*1238),180,1238)
+```
+   Make 2D(6x30) table by activity by subject , for 1238 variables.
+Unroll each table into a vector , then save into *Table*. 
 
+```
 for (i in 4:1241)
 {     
         table.data <- Data[c(2:3,i)]
@@ -127,7 +141,6 @@ for (i in 4:1241)
 column.names <- names(Data)[4:1241]
 
 write.csv(column.names,file="./Table_names.txt",sep=",",col.names=FALSE,row.names=FALSE)
-#write(Table,file="./Table.txt",sep=",",ncolumns=1238)
 write.csv(Table,file="./Table.txt",sep=",",col.names=FALSE,row.names=FALSE)
 # Column names and row names can output by other files. 
-
+```
